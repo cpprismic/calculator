@@ -1,6 +1,7 @@
 #include "app.hpp"
 
 #include <cerrno>
+#include <climits>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -8,7 +9,7 @@
 
 #include "math.hpp"
 
-void app::parse(int argc, char** argv, app::Task& task) {
+bool app::parse(int argc, char** argv, app::Task& task) {
     int opt = 0;
 
     optind = 1;
@@ -19,69 +20,70 @@ void app::parse(int argc, char** argv, app::Task& task) {
             printHelp();
             exit(0);
         case '?':
-            printf("Unknown option. Use -h for help.\n");
-            exit(1);
+            fprintf(stderr, "Error: unknown option. Use -h for help.\n");
+            return false;
         default:
-            exit(1);
+            fprintf(stderr, "Error: unexpected option.\n");
+            return false;
         }
     }
 
     int count = argc - optind;
 
     if (count == 0) {
-        printf("Error: No arguments were passed.\n");
-        printf("Use -h for help.\n");
-        exit(1);
+        fprintf(stderr, "Error: no arguments were passed. Use -h for help.\n");
+        return false;
     }
 
     const char* op_str = argv[optind + count - 1];
     if (strlen(op_str) != 1) {
-        printf("Error: the operator must be a single character.\n");
-        printf("Use -h for help.\n");
-        exit(1);
+        fprintf(stderr, "Error: the operator must be a single character. Use -h for help.\n");
+        return false;
     }
     task.operation = op_str[0];
 
     if (task.operation == '!') {
-        if (count != UNARY_ARGS_COUNT) {
-            printf("Error: 1 number is required for the '!' operator.\n");
-            printf("Use -h for help.\n");
-            exit(1);
+        if (count != app::UNARY_ARGS_COUNT) {
+            fprintf(stderr, "Error: 1 number is required for the '!' operator. Use -h for help.\n");
+            return false;
         }
         char* endptr = nullptr;
         errno = 0;
-        task.value1 = static_cast<int>(strtol(argv[optind], &endptr, 10));
-        if (errno != 0 || endptr == argv[optind] || *endptr != '\0') {
-            printf("Error: '%s' is not a valid integer.\n", argv[optind]);
-            exit(1);
+        long val = strtol(argv[optind], &endptr, 10);
+        if (errno != 0 || endptr == argv[optind] || *endptr != '\0' || val < INT_MIN || val > INT_MAX) {
+            fprintf(stderr, "Error: '%s' is not a valid integer.\n", argv[optind]);
+            return false;
         }
+        task.value1 = static_cast<int>(val);
         task.value2 = 0;
     } else {
-        if (count != BINARY_ARGS_COUNT) {
-            printf("Error: 2 numbers and an operation are required.\n");
-            printf("Use -h for help.\n");
-            exit(1);
+        if (count != app::BINARY_ARGS_COUNT) {
+            fprintf(stderr, "Error: 2 numbers and an operation are required. Use -h for help.\n");
+            return false;
         }
         char* endptr = nullptr;
         errno = 0;
-        task.value1 = static_cast<int>(strtol(argv[optind], &endptr, 10));
-        if (errno != 0 || endptr == argv[optind] || *endptr != '\0') {
-            printf("Error: '%s' is not a valid integer.\n", argv[optind]);
-            exit(1);
+        long val1 = strtol(argv[optind], &endptr, 10);
+        if (errno != 0 || endptr == argv[optind] || *endptr != '\0' || val1 < INT_MIN || val1 > INT_MAX) {
+            fprintf(stderr, "Error: '%s' is not a valid integer.\n", argv[optind]);
+            return false;
         }
+        task.value1 = static_cast<int>(val1);
+
         endptr = nullptr;
         errno = 0;
-        task.value2 = static_cast<int>(strtol(argv[optind + 1], &endptr, 10));
-        if (errno != 0 || endptr == argv[optind + 1] || *endptr != '\0') {
-            printf("Error: '%s' is not a valid integer.\n", argv[optind + 1]);
-            exit(1);
+        long val2 = strtol(argv[optind + 1], &endptr, 10);
+        if (errno != 0 || endptr == argv[optind + 1] || *endptr != '\0' || val2 < INT_MIN || val2 > INT_MAX) {
+            fprintf(stderr, "Error: '%s' is not a valid integer.\n", argv[optind + 1]);
+            return false;
         }
+        task.value2 = static_cast<int>(val2);
     }
 
-    task.result = 0;
+    return true;
 }
 
-bool app::check(app::Task task) {
+bool app::check(const app::Task& task) {
     if (task.operation != '+' && task.operation != '-' && task.operation != '*' && task.operation != '/' &&
         task.operation != '^' && task.operation != '!') {
         return false;
@@ -94,7 +96,7 @@ bool app::check(app::Task task) {
     return true;
 }
 
-void app::calculate(app::Task& task) {
+bool app::calculate(app::Task& task) {
     math::StatusCode code = math::StatusCode::SUCCESS;
 
     switch (task.operation) {
@@ -122,12 +124,14 @@ void app::calculate(app::Task& task) {
     }
 
     if (code != math::StatusCode::SUCCESS) {
-        printf("Error: %s\n", math::statusCodeToString(code));
-        exit(1);
+        fprintf(stderr, "Error: %s\n", math::statusCodeToString(code));
+        return false;
     }
+
+    return true;
 }
 
-void app::printResult(app::Task task) {
+void app::printResult(const app::Task& task) {
     if (task.operation == '!') {
         printf("%d! = %d\n", task.value1, task.result);
     } else {
@@ -138,7 +142,7 @@ void app::printResult(app::Task task) {
 void app::printHelp() {
     printf("Usage:\n");
     printf("  calculator <num1> <num2> <op>        Binary operation\n");
-    printf("  calculator <num> !                    Unary factorial\n\n");
+    printf("  calculator <num> !                   Unary factorial\n\n");
     printf("Binary operations:\n");
     printf("  +  addition\n");
     printf("  -  subtraction\n");
@@ -156,11 +160,15 @@ void app::printHelp() {
 
 void app::run(int argc, char** argv) {
     app::Task task = {};
-    app::parse(argc, argv, task);
-    if (!check(task)) {
-        printf("Error: Incorrect data or operation.\n");
+    if (!parse(argc, argv, task)) {
         exit(1);
     }
-    calculate(task);
+    if (!check(task)) {
+        fprintf(stderr, "Error: unknown operator '%c'.\n", task.operation);
+        exit(1);
+    }
+    if (!calculate(task)) {
+        exit(1);
+    }
     printResult(task);
 }

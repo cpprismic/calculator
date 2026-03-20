@@ -13,10 +13,10 @@ struct Task {
 };
 
 void run(int argc, char** argv);
-void parse(int argc, char** argv, Task& task);
-bool check(Task task);
-void calculate(Task& task);
-void printResult(Task task);
+bool parse(int argc, char** argv, Task& task);
+bool check(const Task& task);
+bool calculate(Task& task);
+void printResult(const Task& task);
 void printHelp();
 
 } // namespace app
