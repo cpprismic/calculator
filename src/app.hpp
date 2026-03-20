@@ -2,6 +2,9 @@
 
 namespace app {
 
+constexpr int UNARY_ARGS_COUNT = 2;
+constexpr int BINARY_ARGS_COUNT = 3;
+
 struct Task {
     int value1;
     int value2;

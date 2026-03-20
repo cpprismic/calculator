@@ -3,8 +3,7 @@ BasedOnStyle: LLVM
 
 # Размер отступа
 IndentWidth: 4
-
-# Использовать пробелы
+TabWidth: 4
 UseTab: Never
 
 # Длина строки
@@ -14,12 +13,20 @@ ColumnLimit: 120
 BreakBeforeBraces: Attach
 AllowShortFunctionsOnASingleLine: Inline
 AllowShortIfStatementsOnASingleLine: false
+AllowShortLambdasOnASingleLine: Inline
+AllowShortLoopsOnASingleLine: false
 
 # Пробелы
 SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
 SpaceAfterTemplateKeyword: true
 SpaceBeforeParens: ControlStatements
 SpaceInEmptyParentheses: false
+SpaceAroundPointerQualifiers: Default
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: true
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
 
 # Указатели и ссылки
 PointerAlignment: Left
@@ -28,15 +35,39 @@ ReferenceAlignment: Left
 # Include сортировка
 IncludeBlocks: Regroup
 IncludeCategories:
-  - Regex: '^<.*\.h>'
+  - Regex: '^<[^/]*>$'              # Стандартные библиотеки (без слешей)
     Priority: 1
-  - Regex: '^".*\.h"'
+  - Regex: '^<.*>$'                 # Остальные системные заголовки
     Priority: 2
-  - Regex: '.*'
+  - Regex: '^".*"'                  # Пользовательские заголовки
     Priority: 3
+  - Regex: '.*'                     # Всё остальное
+    Priority: 4
+SortIncludes: true
+SortUsingDeclarations: true
 
 # Максимальное количество пустых строк
 MaxEmptyLinesToKeep: 2
 
 # Комментарии
 AlignTrailingComments: true
+ReflowComments: true
+
+# Параметры функций
+BinPackArguments: true
+BinPackParameters: true
+AllowAllParametersOfDeclarationOnNextLine: true
+
+# Конструкторы и инициализация
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+ConstructorInitializerIndentWidth: 4
+
+# Классы
+AccessModifierOffset: -4
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignEscapedNewlines: Left
+AlignOperands: true
+
+# Макросы
+AlignConsecutiveMacros: false
