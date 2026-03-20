@@ -151,6 +151,14 @@ void app::printHelp() {
     printf("  ^  exponentiation\n\n");
     printf("Unary operation:\n");
     printf("  !  factorial (for non-negative integers)\n\n");
+    printf("Error handling:\n");
+    printf("  Invalid number of arguments\n");
+    printf("  Invalid or missing operator\n");
+    printf("  Non-integer or out-of-range numbers (INT_MIN to INT_MAX)\n");
+    printf("  Division by zero\n");
+    printf("  Negative exponent\n");
+    printf("  Factorial of negative number\n");
+    printf("  Overflow during calculation\n\n");
     printf("Examples:\n");
     printf("  calculator 10 5 +\n");
     printf("  calculator 15 3 *\n");
