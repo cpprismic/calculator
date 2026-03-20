@@ -28,7 +28,7 @@ bool app::parse(int argc, char** argv, app::Task& task) {
         }
     }
 
-    int count = argc - optind;
+    const int count = argc - optind;
 
     if (count == 0) {
         fprintf(stderr, "Error: no arguments were passed. Use -h for help.\n");
@@ -49,7 +49,7 @@ bool app::parse(int argc, char** argv, app::Task& task) {
         }
         char* endptr = nullptr;
         errno = 0;
-        long val = strtol(argv[optind], &endptr, 10);
+        const long val = strtol(argv[optind], &endptr, 10);
         if (errno != 0 || endptr == argv[optind] || *endptr != '\0' || val < INT_MIN || val > INT_MAX) {
             fprintf(stderr, "Error: '%s' is not a valid integer.\n", argv[optind]);
             return false;
@@ -63,7 +63,7 @@ bool app::parse(int argc, char** argv, app::Task& task) {
         }
         char* endptr = nullptr;
         errno = 0;
-        long val1 = strtol(argv[optind], &endptr, 10);
+        const long val1 = strtol(argv[optind], &endptr, 10);
         if (errno != 0 || endptr == argv[optind] || *endptr != '\0' || val1 < INT_MIN || val1 > INT_MAX) {
             fprintf(stderr, "Error: '%s' is not a valid integer.\n", argv[optind]);
             return false;
@@ -72,7 +72,7 @@ bool app::parse(int argc, char** argv, app::Task& task) {
 
         endptr = nullptr;
         errno = 0;
-        long val2 = strtol(argv[optind + 1], &endptr, 10);
+        const long val2 = strtol(argv[optind + 1], &endptr, 10);
         if (errno != 0 || endptr == argv[optind + 1] || *endptr != '\0' || val2 < INT_MIN || val2 > INT_MAX) {
             fprintf(stderr, "Error: '%s' is not a valid integer.\n", argv[optind + 1]);
             return false;
