@@ -6,10 +6,19 @@
 int main(int argc, char** argv) {
     auto& log = logger::Logger::getInstance();
 
+#ifdef APP_DEBUG
+    log.setLevel(logger::LogLevel::Debug);
+    log.debug("Build type: Debug -- log level set to DEBUG");
+#else
+    log.setLevel(logger::LogLevel::Info);
+#endif
+
     if (argc != 2) {
         log.error("Usage: calculator '<json>'");
         return 1;
     }
+
+    log.debug("Input JSON: " + std::string(argv[1]));
 
     try {
         const app::Calculator calculator;
@@ -17,6 +26,7 @@ int main(int argc, char** argv) {
         const auto task = app::Parser::parse(argv[1]);
         const int result = calculator.calculate(task);
 
+        log.debug("Result: " + std::to_string(result));
         printf("%i\n", result);
 
     } catch (const app::ParseException& e) {

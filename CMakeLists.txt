@@ -105,6 +105,10 @@ add_custom_command(
 add_custom_target(format ALL DEPENDS "${FORMAT_STAMP}")
 add_dependencies(calculator format)
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(calculator PRIVATE APP_DEBUG)
+endif()
+
 target_include_directories(calculator PRIVATE
     src/
 )

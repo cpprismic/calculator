@@ -39,6 +39,11 @@ Task Parser::parse(const std::string& json_str) {
         task.operands.push_back(operand.get<int>());
     }
 
+    log.debug("Operand count: " + std::to_string(task.operands.size()));
+    for (std::size_t i = 0; i < task.operands.size(); ++i) {
+        log.debug("Operand[" + std::to_string(i) + "] = " + std::to_string(task.operands[i]));
+    }
+
     validate(task);
 
     log.debug("Parsed task: operation=" + task.operation);

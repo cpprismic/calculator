@@ -15,16 +15,22 @@ Calculator::Calculator() {
 int Calculator::calculate(const Task& task) const {
     auto& log = logger::Logger::getInstance();
     log.debug("Calculating: " + task.operation);
+    for (std::size_t i = 0; i < task.operands.size(); ++i) {
+        log.debug("Operand[" + std::to_string(i) + "] = " + std::to_string(task.operands[i]));
+    }
 
+    int result = 0;
     if (const auto it = binary_ops_.find(task.operation); it != binary_ops_.end()) {
-        return it->second(task.operands[0], task.operands[1]);
-    }
-    if (const auto it = unary_ops_.find(task.operation); it != unary_ops_.end()) {
-        return it->second(task.operands[0]);
+        result = it->second(task.operands[0], task.operands[1]);
+    } else if (const auto it = unary_ops_.find(task.operation); it != unary_ops_.end()) {
+        result = it->second(task.operands[0]);
+    } else {
+        // Сюда не должны добраться - Parser уже валидировал операцию
+        throw CalculationException("Unknown operation: " + task.operation);
     }
 
-    // Сюда не должны добирться - Parser уже валидировал операцию
-    throw CalculationException("Unknown operation: " + task.operation);
+    log.debug("Result: " + std::to_string(result));
+    return result;
 }
 
 void Calculator::initialize() {
