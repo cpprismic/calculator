@@ -32,19 +32,61 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/cpprismic/math
     GIT_TAG main
     GIT_SHALLOW TRUE
+    UPDATE_DISCONNECTED TRUE
 )
 FetchContent_MakeAvailable(math_lib)
 
+FetchContent_Declare(
+    nlohmann_json
+    GIT_REPOSITORY https://github.com/nlohmann/json
+    GIT_TAG v3.11.3
+    GIT_SHALLOW TRUE
+    UPDATE_DISCONNECTED TRUE
+)
+set(JSON_BuildTests OFF CACHE INTERNAL "")
+FetchContent_MakeAvailable(nlohmann_json)
+
+FetchContent_Declare(
+    spdlog
+    GIT_REPOSITORY https://github.com/gabime/spdlog
+    GIT_TAG        v1.16.0
+    GIT_SHALLOW    TRUE
+    UPDATE_DISCONNECTED TRUE
+)
+set(SPDLOG_BUILD_EXAMPLES OFF CACHE INTERNAL "")
+FetchContent_MakeAvailable(spdlog)
+set_target_properties(spdlog PROPERTIES CXX_CLANG_TIDY "")
+
+FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest
+    GIT_TAG        v1.17.0
+    GIT_SHALLOW    TRUE
+    UPDATE_DISCONNECTED TRUE
+)
+set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+set_target_properties(gtest PROPERTIES CXX_CLANG_TIDY "")
+set_target_properties(gtest_main PROPERTIES CXX_CLANG_TIDY "")
+
 add_executable(calculator 
     src/main.cpp
-    src/app.cpp
+    src/app/parser.cpp
+    src/app/calculator.cpp
+    src/logger/logger.cpp
 )
 
 set(FORMAT_STAMP "${CMAKE_CURRENT_BINARY_DIR}/clang_format.stamp")
 set(FORMAT_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/task.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/exceptions.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/parser.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/parser.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/calculator.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/calculator.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/logger/logger.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/logger/logger.cpp"
 )
 
 add_custom_command(
@@ -62,8 +104,15 @@ target_include_directories(calculator PRIVATE
     src/
 )
 
-target_link_libraries(calculator PRIVATE MathLib::MathLib)
+target_link_libraries(calculator PRIVATE 
+    MathLib::MathLib
+    nlohmann_json::nlohmann_json
+    spdlog::spdlog
+)
 
 install(TARGETS calculator
     RUNTIME DESTINATION bin
 )
+
+enable_testing()
+add_subdirectory(tests)

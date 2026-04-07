@@ -1,4 +1,6 @@
 ---
+HeaderFilterRegex: '^.*/src/.*\.(h|hpp)$'
+
 Checks: >-
   clang-diagnostic-*,
   clang-analyzer-*,
@@ -27,8 +29,6 @@ Checks: >-
   -concurrency-mt-unsafe
 
 WarningsAsErrors: '*'
-
-HeaderFilterRegex: 'src/.*\.h$'
 
 CheckOptions:
   - key:   cppcoreguidelines-special-member-functions.AllowMissingMoveFunctions
