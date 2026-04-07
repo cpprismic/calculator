@@ -24,10 +24,11 @@ int main(int argc, char** argv) {
         const app::Calculator calculator;
 
         const auto task = app::Parser::parse(argv[1]);
+        log.info("Operation: " + task.operation);
         const int result = calculator.calculate(task);
 
-        log.debug("Result: " + std::to_string(result));
-        printf("%i\n", result);
+        log.info("Result: " + std::to_string(result));
+        printf("Result: %i\n", result);
 
     } catch (const app::ParseException& e) {
         log.error("Parse error: " + std::string(e.what()));

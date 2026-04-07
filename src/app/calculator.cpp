@@ -1,7 +1,5 @@
 #include "calculator.hpp"
 
-#include <climits>
-
 #include "../logger/logger.hpp"
 #include "exceptions.hpp"
 #include "math.hpp"
