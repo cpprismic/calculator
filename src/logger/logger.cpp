@@ -1,5 +1,7 @@
 #include "logger.hpp"
 
+#include <filesystem>
+
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
@@ -10,6 +12,7 @@ struct Logger::Impl {
     std::shared_ptr<spdlog::logger> logger;
 
     Impl() {
+        std::filesystem::create_directories("logs");
         auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
         auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/app.log", false);
 
@@ -20,6 +23,7 @@ struct Logger::Impl {
 };
 
 Logger::Logger() : impl_(std::make_unique<Impl>()) {}
+
 Logger::~Logger() = default;
 
 Logger& Logger::getInstance() {
@@ -64,12 +68,15 @@ void Logger::log(LogLevel level, std::string_view message) {
 void Logger::debug(std::string_view message) {
     log(LogLevel::Debug, message);
 }
+
 void Logger::info(std::string_view message) {
     log(LogLevel::Info, message);
 }
+
 void Logger::warning(std::string_view message) {
     log(LogLevel::Warning, message);
 }
+
 void Logger::error(std::string_view message) {
     log(LogLevel::Error, message);
 }

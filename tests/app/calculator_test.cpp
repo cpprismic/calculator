@@ -77,6 +77,11 @@ TEST(CalculatorTest, DivideByZeroThrows) {
     EXPECT_THROW(calculator.calculate(makeTask("divide", {10, 0})), CalculationException);
 }
 
+TEST(CalculatorTest, DivideOverflowThrows) {
+    const Calculator calculator;
+    EXPECT_THROW(calculator.calculate(makeTask("divide", {-2147483648, -1})), CalculationException);
+}
+
 // Возведение в степень
 
 TEST(CalculatorTest, Power) {

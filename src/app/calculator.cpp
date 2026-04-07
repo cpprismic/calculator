@@ -30,53 +30,76 @@ int Calculator::calculate(const Task& task) const {
 void Calculator::initialize() {
     binary_ops_["add"] = [](int a, int b) {
         int result = 0;
-        if (math::add(a, b, result) != math::StatusCode::SUCCESS) {
+        switch (math::add(a, b, result)) {
+        case math::StatusCode::SUCCESS:
+            return result;
+        case math::StatusCode::OVERFLOW:
             throw CalculationException("Overflow in addition");
+        default:
+            throw CalculationException("Unknown error in addition");
         }
-        return result;
     };
     binary_ops_["subtract"] = [](int a, int b) {
         int result = 0;
-        if (math::subtract(a, b, result) != math::StatusCode::SUCCESS) {
+        switch (math::subtract(a, b, result)) {
+        case math::StatusCode::SUCCESS:
+            return result;
+        case math::StatusCode::OVERFLOW:
             throw CalculationException("Overflow in subtraction");
+        default:
+            throw CalculationException("Unknown error in subtraction");
         }
-        return result;
     };
     binary_ops_["multiply"] = [](int a, int b) {
         int result = 0;
-        if (math::multiply(a, b, result) != math::StatusCode::SUCCESS) {
+        switch (math::multiply(a, b, result)) {
+        case math::StatusCode::SUCCESS:
+            return result;
+        case math::StatusCode::OVERFLOW:
             throw CalculationException("Overflow in multiplication");
+        default:
+            throw CalculationException("Unknown error in multiplication");
         }
-        return result;
     };
     binary_ops_["divide"] = [](int a, int b) {
-        if (b == 0) {
-            throw CalculationException("Division by zero");
-        }
         int result = 0;
-        math::divide(a, b, result);
-        return result;
+        switch (math::divide(a, b, result)) {
+        case math::StatusCode::SUCCESS:
+            return result;
+        case math::StatusCode::DIVISION_BY_ZERO:
+            throw CalculationException("Division by zero");
+        case math::StatusCode::OVERFLOW:
+            throw CalculationException("Overflow in division");
+        default:
+            throw CalculationException("Unknown error in division");
+        }
     };
     binary_ops_["power"] = [](int a, int b) {
-        if (b < 0) {
-            throw CalculationException("Negative exponent is not supported");
-        }
         int result = 0;
-        if (math::power(a, b, result) != math::StatusCode::SUCCESS) {
+        switch (math::power(a, b, result)) {
+        case math::StatusCode::SUCCESS:
+            return result;
+        case math::StatusCode::OVERFLOW:
             throw CalculationException("Overflow in power");
+        case math::StatusCode::INVALID_ARGUMENT:
+            throw CalculationException("Negative exponent is not supported");
+        default:
+            throw CalculationException("Unknown error in power");
         }
-        return result;
     };
 
     unary_ops_["factorial"] = [](int a) {
-        if (a < 0) {
-            throw CalculationException("Factorial of negative number");
-        }
         int result = 0;
-        if (math::factorial(a, result) != math::StatusCode::SUCCESS) {
+        switch (math::factorial(a, result)) {
+        case math::StatusCode::SUCCESS:
+            return result;
+        case math::StatusCode::OVERFLOW:
             throw CalculationException("Overflow in factorial");
+        case math::StatusCode::INVALID_ARGUMENT:
+            throw CalculationException("Factorial of negative number");
+        default:
+            throw CalculationException("Unknown error in factorial");
         }
-        return result;
     };
 }
 

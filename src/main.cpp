@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "app/calculator.hpp"
 #include "app/exceptions.hpp"
 #include "app/parser.hpp"
@@ -14,13 +12,12 @@ int main(int argc, char** argv) {
     }
 
     try {
-        const app::Parser parser;
         const app::Calculator calculator;
 
-        const auto task = parser.parse(argv[1]);
+        const auto task = app::Parser::parse(argv[1]);
         const int result = calculator.calculate(task);
 
-        std::cout << result << '\n';
+        printf("%i\n", result);
 
     } catch (const app::ParseException& e) {
         log.error("Parse error: " + std::string(e.what()));

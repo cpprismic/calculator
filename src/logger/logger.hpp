@@ -25,7 +25,6 @@ public:
     void warning(std::string_view message);
     void error(std::string_view message);
 
-
 private:
     Logger();
     ~Logger();

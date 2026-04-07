@@ -5,10 +5,13 @@
 #include "../logger/logger.hpp"
 #include "exceptions.hpp"
 
-
 namespace app {
 
-Task Parser::parse(const std::string& json_str) const {
+const std::unordered_set<std::string> Parser::unary_ = {"factorial"};
+const std::unordered_set<std::string> Parser::binary_ = {
+    "add", "subtract", "multiply", "divide", "power"};
+
+Task Parser::parse(const std::string& json_str) {
     auto& log = logger::Logger::getInstance();
     log.debug("Parsing JSON: " + json_str);
 
@@ -42,7 +45,7 @@ Task Parser::parse(const std::string& json_str) const {
     return task;
 }
 
-void Parser::validate(const Task& task) const {
+void Parser::validate(const Task& task) {
     if (binary_.count(task.operation) != 0) {
         if (task.operands.size() != 2) {
             throw ParseException("Operation '" + task.operation + "' requires exactly 2 operands");
