@@ -43,8 +43,8 @@ FetchContent_MakeAvailable(math_lib)
 
 FetchContent_Declare(
     nlohmann_json
-    # GIT_REPOSITORY https://github.com/nlohmann/json
-    URL https://github.com/nlohmann/json/archive/refs/tags/v3.11.3.zip
+    GIT_REPOSITORY https://github.com/nlohmann/json
+    # URL https://github.com/nlohmann/json/archive/refs/tags/v3.11.3.zip
     GIT_TAG v3.11.3
     GIT_SHALLOW TRUE
     UPDATE_DISCONNECTED TRUE
@@ -54,8 +54,8 @@ FetchContent_MakeAvailable(nlohmann_json)
 
 FetchContent_Declare(
     spdlog
-    # GIT_REPOSITORY https://github.com/gabime/spdlog
-    URL https://github.com/gabime/spdlog/archive/refs/tags/v1.16.0.zip
+    GIT_REPOSITORY https://github.com/gabime/spdlog
+    # URL https://github.com/gabime/spdlog/archive/refs/tags/v1.16.0.zip
     GIT_TAG        v1.16.0
     GIT_SHALLOW    TRUE
     UPDATE_DISCONNECTED TRUE
@@ -66,8 +66,8 @@ set_target_properties(spdlog PROPERTIES CXX_CLANG_TIDY "")
 
 FetchContent_Declare(
     googletest
-    # GIT_REPOSITORY https://github.com/google/googletest
-    URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
+    GIT_REPOSITORY https://github.com/google/googletest
+    # URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
     GIT_TAG        v1.17.0
     GIT_SHALLOW    TRUE
     UPDATE_DISCONNECTED TRUE
