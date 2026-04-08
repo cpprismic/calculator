@@ -26,7 +26,6 @@ coverage/
 *.gcov
 
 # IDE
-.vscode/
 .idea/
 *.swp
 *.swo
