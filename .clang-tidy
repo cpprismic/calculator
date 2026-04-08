@@ -19,6 +19,7 @@ Checks: >-
   -readability-magic-numbers,
   -readability-identifier-length,
   performance-*,
+  -performance-enum-size,
   bugprone-*,
   -bugprone-easily-swappable-parameters,
   misc-*,
