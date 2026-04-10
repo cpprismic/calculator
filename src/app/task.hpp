@@ -1,13 +1,21 @@
 #pragma once
 
 #include <string>
-#include <vector>
 
 namespace app {
 
+enum class OperationStatus { 
+    NotExecuted, 
+    Success, 
+    Failed 
+};
+
 struct Task {
-    std::string operation; // "add", "subtract", "multiply", "divide", "power", "factorial"
-    std::vector<int> operands;
+    int first_number {0};
+    int second_number {0};
+    std::string operation;
+    int result {0};
+    OperationStatus status {OperationStatus::NotExecuted};
 };
 
 } // namespace app

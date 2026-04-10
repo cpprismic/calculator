@@ -1,9 +1,10 @@
 #include "parser.hpp"
 
+#include <stdexcept>
+
 #include <nlohmann/json.hpp>
 
 #include "../logger/logger.hpp"
-#include "exceptions.hpp"
 
 namespace app {
 
@@ -19,48 +20,54 @@ Task Parser::parse(const std::string& json_str) {
     try {
         json = nlohmann::json::parse(json_str);
     } catch (const nlohmann::json::parse_error& e) {
-        throw ParseException("Invalid JSON: " + std::string(e.what()));
+        throw std::invalid_argument("Invalid JSON: " + std::string(e.what()));
     }
 
     if (!json.contains("operation") || !json["operation"].is_string()) {
-        throw ParseException("Missing or invalid field: 'operation'");
+        throw std::invalid_argument("Missing or invalid field: 'operation'");
     }
     if (!json.contains("operands") || !json["operands"].is_array()) {
-        throw ParseException("Missing or invalid field: 'operands'");
+        throw std::invalid_argument("Missing or invalid field: 'operands'");
     }
 
     Task task;
     task.operation = json["operation"].get<std::string>();
 
-    for (const auto& operand : json["operands"]) {
+    const auto& operands = json["operands"];
+    for (const auto& operand : operands) {
         if (!operand.is_number_integer()) {
-            throw ParseException("Operands must be integers");
+            throw std::invalid_argument("Operands must be integers");
         }
-        task.operands.push_back(operand.get<int>());
     }
 
-    log.debug("Operand count: " + std::to_string(task.operands.size()));
-    for (std::size_t i = 0; i < task.operands.size(); ++i) {
-        log.debug("Operand[" + std::to_string(i) + "] = " + std::to_string(task.operands[i]));
-    }
+    validate(task.operation, operands.size());
 
-    validate(task);
+    if (binary_.count(task.operation) != 0) {
+        task.first_number = operands[0].get<int>();
+        task.second_number = operands[1].get<int>();
+        log.debug("First number: " + std::to_string(task.first_number));
+        log.debug("Second number: " + std::to_string(task.second_number));
+    } else {
+        task.first_number = operands[0].get<int>();
+        log.debug("First number: " + std::to_string(task.first_number));
+    }
 
     log.debug("Parsed task: operation=" + task.operation);
     return task;
 }
 
-void Parser::validate(const Task& task) {
-    if (binary_.count(task.operation) != 0) {
-        if (task.operands.size() != 2) {
-            throw ParseException("Operation '" + task.operation + "' requires exactly 2 operands");
+void Parser::validate(const std::string& operation, std::size_t operand_count) {
+    if (binary_.count(operation) != 0) {
+        if (operand_count != 2) {
+            throw std::invalid_argument("Operation '" + operation +
+                                        "' requires exactly 2 operands");
         }
-    } else if (unary_.count(task.operation) != 0) {
-        if (task.operands.size() != 1) {
-            throw ParseException("Operation '" + task.operation + "' requires exactly 1 operand");
+    } else if (unary_.count(operation) != 0) {
+        if (operand_count != 1) {
+            throw std::invalid_argument("Operation '" + operation + "' requires exactly 1 operand");
         }
     } else {
-        throw ParseException("Unknown operation: '" + task.operation + "'");
+        throw std::invalid_argument("Unknown operation: '" + operation + "'");
     }
 }
 

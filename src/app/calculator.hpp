@@ -11,8 +11,15 @@ namespace app {
 class Calculator {
 public:
     Calculator();
+    ~Calculator();
 
-    int calculate(const Task& task) const;
+    Calculator(const Calculator& other);
+    Calculator& operator=(const Calculator& other);
+
+    Calculator(Calculator&& other) noexcept;
+    Calculator& operator=(Calculator&& other) noexcept;
+
+    void calculate(Task& task) const;
 
 private:
     void initialize();

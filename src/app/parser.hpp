@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <string>
 #include <unordered_set>
 
@@ -9,12 +10,19 @@ namespace app {
 
 class Parser {
 public:
-    // Принимает сырую JSON-строку из argv
-    // Бросает ParseException если JSON невалиден или поля отсутствуют
+    Parser() = delete;
+    ~Parser() = delete;
+
+    Parser(const Parser&) = delete;
+    Parser& operator=(const Parser&) = delete;
+
+    Parser(Parser&&) = delete;
+    Parser& operator=(Parser&&) = delete;
+
     static Task parse(const std::string& json_str);
 
 private:
-    static void validate(const Task& task);
+    static void validate(const std::string& operation, std::size_t operand_count);
 
     static const std::unordered_set<std::string> unary_;
     static const std::unordered_set<std::string> binary_;

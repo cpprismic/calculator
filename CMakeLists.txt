@@ -77,8 +77,9 @@ FetchContent_MakeAvailable(googletest)
 set_target_properties(gtest PROPERTIES CXX_CLANG_TIDY "")
 set_target_properties(gtest_main PROPERTIES CXX_CLANG_TIDY "")
 
-add_executable(calculator 
+add_executable(calculator
     src/main.cpp
+    src/app/application.cpp
     src/app/parser.cpp
     src/app/calculator.cpp
     src/logger/logger.cpp
@@ -88,7 +89,8 @@ set(FORMAT_STAMP "${CMAKE_CURRENT_BINARY_DIR}/clang_format.stamp")
 set(FORMAT_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/app/task.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/exceptions.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/application.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/application.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/app/parser.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/app/parser.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/app/calculator.hpp"

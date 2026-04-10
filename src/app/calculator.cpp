@@ -1,7 +1,8 @@
 #include "calculator.hpp"
 
+#include <stdexcept>
+
 #include "../logger/logger.hpp"
-#include "exceptions.hpp"
 #include "math.hpp"
 
 namespace app {
@@ -10,25 +11,36 @@ Calculator::Calculator() {
     initialize();
 }
 
-int Calculator::calculate(const Task& task) const {
+Calculator::~Calculator() = default;
+
+Calculator::Calculator(const Calculator&) = default;
+Calculator& Calculator::operator=(const Calculator&) = default;
+
+Calculator::Calculator(Calculator&&) noexcept = default;
+Calculator& Calculator::operator=(Calculator&&) noexcept = default;
+
+void Calculator::calculate(Task& task) const {
     auto& log = logger::Logger::getInstance();
     log.debug("Calculating: " + task.operation);
-    for (std::size_t i = 0; i < task.operands.size(); ++i) {
-        log.debug("Operand[" + std::to_string(i) + "] = " + std::to_string(task.operands[i]));
+    log.debug("First number: " + std::to_string(task.first_number));
+
+    try {
+        if (const auto it = binary_ops_.find(task.operation); it != binary_ops_.end()) {
+            log.debug("Second number: " + std::to_string(task.second_number));
+            task.result = it->second(task.first_number, task.second_number);
+        } else if (const auto it = unary_ops_.find(task.operation); it != unary_ops_.end()) {
+            task.result = it->second(task.first_number);
+        } else {
+            task.status = OperationStatus::Failed;
+            throw std::runtime_error("Unknown operation: " + task.operation);
+        }
+    } catch (const std::runtime_error&) {
+        task.status = OperationStatus::Failed;
+        throw;
     }
 
-    int result = 0;
-    if (const auto it = binary_ops_.find(task.operation); it != binary_ops_.end()) {
-        result = it->second(task.operands[0], task.operands[1]);
-    } else if (const auto it = unary_ops_.find(task.operation); it != unary_ops_.end()) {
-        result = it->second(task.operands[0]);
-    } else {
-        // Сюда не должны добраться - Parser уже валидировал операцию
-        throw CalculationException("Unknown operation: " + task.operation);
-    }
-
-    log.debug("Result: " + std::to_string(result));
-    return result;
+    task.status = OperationStatus::Success;
+    log.debug("Result: " + std::to_string(task.result));
 }
 
 void Calculator::initialize() {
@@ -38,9 +50,9 @@ void Calculator::initialize() {
         case math::StatusCode::SUCCESS:
             return result;
         case math::StatusCode::OVERFLOW:
-            throw CalculationException("Overflow in addition");
+            throw std::runtime_error("Overflow in addition");
         default:
-            throw CalculationException("Unknown error in addition");
+            throw std::runtime_error("Unknown error in addition");
         }
     };
     binary_ops_["subtract"] = [](int a, int b) {
@@ -49,9 +61,9 @@ void Calculator::initialize() {
         case math::StatusCode::SUCCESS:
             return result;
         case math::StatusCode::OVERFLOW:
-            throw CalculationException("Overflow in subtraction");
+            throw std::runtime_error("Overflow in subtraction");
         default:
-            throw CalculationException("Unknown error in subtraction");
+            throw std::runtime_error("Unknown error in subtraction");
         }
     };
     binary_ops_["multiply"] = [](int a, int b) {
@@ -60,9 +72,9 @@ void Calculator::initialize() {
         case math::StatusCode::SUCCESS:
             return result;
         case math::StatusCode::OVERFLOW:
-            throw CalculationException("Overflow in multiplication");
+            throw std::runtime_error("Overflow in multiplication");
         default:
-            throw CalculationException("Unknown error in multiplication");
+            throw std::runtime_error("Unknown error in multiplication");
         }
     };
     binary_ops_["divide"] = [](int a, int b) {
@@ -71,11 +83,11 @@ void Calculator::initialize() {
         case math::StatusCode::SUCCESS:
             return result;
         case math::StatusCode::DIVISION_BY_ZERO:
-            throw CalculationException("Division by zero");
+            throw std::runtime_error("Division by zero");
         case math::StatusCode::OVERFLOW:
-            throw CalculationException("Overflow in division");
+            throw std::runtime_error("Overflow in division");
         default:
-            throw CalculationException("Unknown error in division");
+            throw std::runtime_error("Unknown error in division");
         }
     };
     binary_ops_["power"] = [](int a, int b) {
@@ -84,11 +96,11 @@ void Calculator::initialize() {
         case math::StatusCode::SUCCESS:
             return result;
         case math::StatusCode::OVERFLOW:
-            throw CalculationException("Overflow in power");
+            throw std::runtime_error("Overflow in power");
         case math::StatusCode::INVALID_ARGUMENT:
-            throw CalculationException("Negative exponent is not supported");
+            throw std::runtime_error("Negative exponent is not supported");
         default:
-            throw CalculationException("Unknown error in power");
+            throw std::runtime_error("Unknown error in power");
         }
     };
 
@@ -98,11 +110,11 @@ void Calculator::initialize() {
         case math::StatusCode::SUCCESS:
             return result;
         case math::StatusCode::OVERFLOW:
-            throw CalculationException("Overflow in factorial");
+            throw std::runtime_error("Overflow in factorial");
         case math::StatusCode::INVALID_ARGUMENT:
-            throw CalculationException("Factorial of negative number");
+            throw std::runtime_error("Factorial of negative number");
         default:
-            throw CalculationException("Unknown error in factorial");
+            throw std::runtime_error("Unknown error in factorial");
         }
     };
 }
