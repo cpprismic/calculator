@@ -1,6 +1,8 @@
 # Сборка
 build/
 */build/
+build_release/
+*/build_release/
 cmake-build-*/
 out/
 

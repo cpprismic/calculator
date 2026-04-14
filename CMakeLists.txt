@@ -4,6 +4,11 @@ project(Calculator VERSION 1.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type (Debug or Release)" FORCE)
+endif()
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+
 find_program(CLANG_TIDY_EXE NAMES "clang-tidy")
 if(CLANG_TIDY_EXE)
     if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy")
@@ -32,19 +37,66 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/cpprismic/math
     GIT_TAG main
     GIT_SHALLOW TRUE
+    UPDATE_DISCONNECTED TRUE
 )
 FetchContent_MakeAvailable(math_lib)
 
-add_executable(calculator 
+FetchContent_Declare(
+    nlohmann_json
+    GIT_REPOSITORY https://github.com/nlohmann/json
+    # URL https://github.com/nlohmann/json/archive/refs/tags/v3.11.3.zip
+    GIT_TAG v3.11.3
+    GIT_SHALLOW TRUE
+    UPDATE_DISCONNECTED TRUE
+)
+set(JSON_BuildTests OFF CACHE INTERNAL "")
+FetchContent_MakeAvailable(nlohmann_json)
+
+FetchContent_Declare(
+    spdlog
+    GIT_REPOSITORY https://github.com/gabime/spdlog
+    # URL https://github.com/gabime/spdlog/archive/refs/tags/v1.16.0.zip
+    GIT_TAG        v1.16.0
+    GIT_SHALLOW    TRUE
+    UPDATE_DISCONNECTED TRUE
+)
+set(SPDLOG_BUILD_EXAMPLES OFF CACHE INTERNAL "")
+FetchContent_MakeAvailable(spdlog)
+set_target_properties(spdlog PROPERTIES CXX_CLANG_TIDY "")
+
+FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest
+    # URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
+    GIT_TAG        v1.17.0
+    GIT_SHALLOW    TRUE
+    UPDATE_DISCONNECTED TRUE
+)
+set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+set_target_properties(gtest PROPERTIES CXX_CLANG_TIDY "")
+set_target_properties(gtest_main PROPERTIES CXX_CLANG_TIDY "")
+
+add_executable(calculator
     src/main.cpp
-    src/app.cpp
+    src/app/application.cpp
+    src/app/parser.cpp
+    src/app/calculator.cpp
+    src/logger/logger.cpp
 )
 
 set(FORMAT_STAMP "${CMAKE_CURRENT_BINARY_DIR}/clang_format.stamp")
 set(FORMAT_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/task.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/application.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/application.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/parser.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/parser.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/calculator.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/calculator.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/logger/logger.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/logger/logger.cpp"
 )
 
 add_custom_command(
@@ -58,12 +110,23 @@ add_custom_command(
 add_custom_target(format ALL DEPENDS "${FORMAT_STAMP}")
 add_dependencies(calculator format)
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(calculator PRIVATE APP_DEBUG)
+endif()
+
 target_include_directories(calculator PRIVATE
     src/
 )
 
-target_link_libraries(calculator PRIVATE MathLib::MathLib)
+target_link_libraries(calculator PRIVATE 
+    MathLib::MathLib
+    nlohmann_json::nlohmann_json
+    spdlog::spdlog
+)
 
 install(TARGETS calculator
     RUNTIME DESTINATION bin
 )
+
+enable_testing()
+add_subdirectory(tests)

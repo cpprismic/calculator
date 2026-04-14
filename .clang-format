@@ -7,7 +7,7 @@ TabWidth: 4
 UseTab: Never
 
 # Длина строки
-ColumnLimit: 120
+ColumnLimit: 100
 
 # Скобки
 BreakBeforeBraces: Attach
@@ -46,20 +46,21 @@ IncludeCategories:
 SortIncludes: true
 SortUsingDeclarations: true
 
-# Максимальное количество пустых строк
-MaxEmptyLinesToKeep: 2
+# Пустые строки
+MaxEmptyLinesToKeep: 1
+EmptyLineBeforeAccessModifier: LogicalBlock
+SeparateDefinitionBlocks: Always
 
 # Комментарии
-AlignTrailingComments: true
 ReflowComments: true
 
-# Параметры функций
-BinPackArguments: true
-BinPackParameters: true
+# Аргументы и параметры функций
+BinPackArguments: false
+BinPackParameters: false
 AllowAllParametersOfDeclarationOnNextLine: true
 
 # Конструкторы и инициализация
-ConstructorInitializerAllOnOneLineOrOnePerLine: false
+PackConstructorInitializers: NextLine
 ConstructorInitializerIndentWidth: 4
 
 # Классы
