@@ -19,7 +19,7 @@ public:
     Parser(Parser&&) = delete;
     Parser& operator=(Parser&&) = delete;
 
-    static Task parse(const std::string& json_str);
+    static calculator::Task parse(const std::string& json_str);
 
 private:
     static void validate(const std::string& operation, std::size_t operand_count);

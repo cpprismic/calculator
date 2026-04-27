@@ -53,6 +53,9 @@ docker-compose.override.yml
 .env.local
 .env.*.local
 
+# DB credentials config
+config.json
+
 # Временные файлы
 *.tmp
 *.temp

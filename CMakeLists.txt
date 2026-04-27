@@ -77,12 +77,20 @@ FetchContent_MakeAvailable(googletest)
 set_target_properties(gtest PROPERTIES CXX_CLANG_TIDY "")
 set_target_properties(gtest_main PROPERTIES CXX_CLANG_TIDY "")
 
+find_package(PostgreSQL REQUIRED)
+
 add_executable(calculator
     src/main.cpp
     src/app/application.cpp
     src/app/parser.cpp
     src/app/calculator.cpp
     src/logger/logger.cpp
+    src/config/config.cpp
+    src/storage/db/pg_connection.cpp
+    src/storage/db/pg_result.cpp
+    src/storage/db/repository.cpp
+    src/storage/cache/cache.cpp
+    src/storage/storage.cpp
 )
 
 set(FORMAT_STAMP "${CMAKE_CURRENT_BINARY_DIR}/clang_format.stamp")
@@ -97,6 +105,18 @@ set(FORMAT_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/src/app/calculator.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/logger/logger.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/logger/logger.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/config/config.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/config/config.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/db/pg_connection.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/db/pg_connection.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/db/pg_result.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/db/pg_result.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/db/repository.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/db/repository.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/cache/cache.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/cache/cache.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/storage.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/storage.cpp"
 )
 
 add_custom_command(
@@ -118,10 +138,11 @@ target_include_directories(calculator PRIVATE
     src/
 )
 
-target_link_libraries(calculator PRIVATE 
+target_link_libraries(calculator PRIVATE
     MathLib::MathLib
     nlohmann_json::nlohmann_json
     spdlog::spdlog
+    PostgreSQL::PostgreSQL
 )
 
 install(TARGETS calculator

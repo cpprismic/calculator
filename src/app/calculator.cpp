@@ -5,7 +5,7 @@
 #include "../logger/logger.hpp"
 #include "math.hpp"
 
-namespace app {
+namespace calculator {
 
 Calculator::Calculator() {
     initialize();
@@ -119,4 +119,4 @@ void Calculator::initialize() {
     };
 }
 
-} // namespace app
+} // namespace calculator

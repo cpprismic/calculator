@@ -6,7 +6,7 @@
 
 #include "task.hpp"
 
-namespace app {
+namespace calculator {
 
 class Calculator {
 public:
@@ -31,4 +31,4 @@ private:
     std::unordered_map<std::string, UnaryOp> unary_ops_;
 };
 
-} // namespace app
+} // namespace calculator
