@@ -141,6 +141,73 @@ cmake --build build && ctest --test-dir build
 
 Тесты не требуют подключения к БД.
 
+## Valgrind
+
+Проверка на утечки памяти встроена в тестовый прогон — тест `ValgrindMemcheck` запускается автоматически вместе с остальными:
+
+```bash
+ctest --test-dir build --output-on-failure
+```
+
+Для ручной проверки конкретного сценария:
+
+```bash
+# Успешная операция
+valgrind --leak-check=full --show-leak-kinds=definite,indirect --error-exitcode=1 \
+    ./build/calculator '{"operation": "add", "operands": [2, 3]}'
+
+# Error-путь (деление на ноль)
+valgrind --leak-check=full --show-leak-kinds=definite,indirect --error-exitcode=1 \
+    ./build/calculator '{"operation": "divide", "operands": [10, 0]}'
+```
+
+`--show-leak-kinds=definite,indirect` исключает `still reachable` — глобальные буферы spdlog и libpq освобождаются при выходе из процесса и утечками не являются.
+
+## Perf
+
+Для профилирования нужна сборка с оптимизациями и отладочными символами:
+
+```bash
+cmake -S . -B build_perf -DCMAKE_BUILD_TYPE=RelWithDebInfo
+cmake --build build_perf
+```
+
+### Общая статистика
+
+```bash
+perf stat -r 100 ./build_perf/calculator '{"operation": "add", "operands": [2, 3]}'
+```
+
+### Профиль вызовов
+
+```bash
+perf record -g --call-graph dwarf \
+    -- sh -c 'for i in $(seq 10000); do
+        ./build_perf/calculator "{\"operation\": \"add\", \"operands\": [2, 3]}"
+    done'
+
+perf report
+```
+
+Для профилирования тестового бинаря (содержит тысячи операций, не требует цикла):
+
+```bash
+perf record -g --call-graph dwarf ./build_perf/calculator_tests
+perf report
+```
+
+### Flame Graph
+
+```bash
+git clone --depth=1 https://github.com/brendangregg/FlameGraph /tmp/flamegraph
+
+perf record -F 99 -g --call-graph dwarf ./build_perf/calculator_tests
+perf script | /tmp/flamegraph/stackcollapse-perf.pl | \
+    /tmp/flamegraph/flamegraph.pl > flamegraph.svg
+```
+
+Открыть `flamegraph.svg` в браузере — широкие блоки соответствуют узким местам.
+
 ## Логи
 
 Помимо вывода в консоль, все сообщения сохраняются в `logs/app.log` (директория создаётся автоматически при первом запуске).

@@ -28,3 +28,16 @@ target_include_directories(calculator_tests SYSTEM PRIVATE
 
 include(GoogleTest)
 gtest_discover_tests(calculator_tests)
+
+find_program(VALGRIND_EXE NAMES valgrind)
+if(VALGRIND_EXE)
+    add_test(
+        NAME ValgrindMemcheck
+        COMMAND "${VALGRIND_EXE}"
+            --leak-check=full
+            --show-leak-kinds=definite,indirect
+            --error-exitcode=1
+            --quiet
+            $<TARGET_FILE:calculator_tests>
+    )
+endif()
