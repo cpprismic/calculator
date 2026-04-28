@@ -17,7 +17,7 @@
 
 ### 1. Настройка базы данных
 
-Скрипт создаёт пользователя, базу данных, выдаёт права и генерирует `config.json` в корне проекта:
+Скрипт создаёт пользователя, базу данных, выдаёт права и генерирует `config.json` в build-директории проекта:
 
 ```bash
 ./scripts/setup_db.sh
@@ -123,7 +123,7 @@ CREATE TABLE calculations (
     first_num  INTEGER     NOT NULL,
     second_num INTEGER     NOT NULL,
     result     INTEGER     NOT NULL,
-    status     INTEGER     NOT NULL  -- 0: успех, 1: ошибка
+    status     INTEGER     NOT NULL  -- 0: успех, 1: ошибка, 2: деление на ноль, 3: переполнение буфера
 );
 ```
 

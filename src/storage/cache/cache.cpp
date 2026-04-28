@@ -7,20 +7,23 @@ namespace storage {
 
 const std::unordered_set<std::string> Cache::commutative_ops_ = {"add", "multiply"};
 const std::unordered_set<std::string> Cache::unary_ops_ = {"factorial"};
+const std::unordered_map<std::string, char> Cache::op_symbols_ = {
+    {"add", '+'}, {"subtract", '-'}, {"multiply", '*'}, {"divide", '/'}, {"power", '^'}};
 
 std::string Cache::makeKey(const calculator::Task& task) {
     if (unary_ops_.count(task.operation) != 0) {
-        return task.operation + ":" + std::to_string(task.first_number);
+        return std::to_string(task.first_number) + "!";
     }
+
+    const char sym = op_symbols_.at(task.operation);
 
     if (commutative_ops_.count(task.operation) != 0) {
         const int lo = std::min(task.first_number, task.second_number);
         const int hi = std::max(task.first_number, task.second_number);
-        return task.operation + ":" + std::to_string(lo) + ":" + std::to_string(hi);
+        return std::to_string(lo) + sym + std::to_string(hi);
     }
 
-    return task.operation + ":" + std::to_string(task.first_number) + ":" +
-           std::to_string(task.second_number);
+    return std::to_string(task.first_number) + sym + std::to_string(task.second_number);
 }
 
 std::optional<calculator::Task> Cache::find(const calculator::Task& task) const {

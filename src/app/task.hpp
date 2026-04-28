@@ -4,7 +4,7 @@
 
 namespace calculator {
 
-enum class OperationStatus { NotExecuted, Success, Failed };
+enum class OperationStatus { NotExecuted, Success, Failed, DivisionByZero, Overflow };
 
 struct Task {
     int first_number {0};

@@ -10,12 +10,29 @@ namespace storage::db {
 namespace {
 
 calculator::OperationStatus statusFromInt(int value) {
-    return (value == 0) ? calculator::OperationStatus::Success
-                        : calculator::OperationStatus::Failed;
+    switch (value) {
+    case 0:
+        return calculator::OperationStatus::Success;
+    case 2:
+        return calculator::OperationStatus::DivisionByZero;
+    case 3:
+        return calculator::OperationStatus::Overflow;
+    default:
+        return calculator::OperationStatus::Failed;
+    }
 }
 
 int statusToInt(calculator::OperationStatus status) {
-    return (status == calculator::OperationStatus::Success) ? 0 : 1;
+    switch (status) {
+    case calculator::OperationStatus::Success:
+        return 0;
+    case calculator::OperationStatus::DivisionByZero:
+        return 2;
+    case calculator::OperationStatus::Overflow:
+        return 3;
+    default:
+        return 1;
+    }
 }
 
 } // namespace

@@ -31,14 +31,14 @@ TEST(CacheMakeKeyTest, CommutativeMultiplySortsOperands) {
 
 TEST(CacheMakeKeyTest, CommutativeKeyContainsSortedOperands) {
     const calculator::Task task = makeTask("add", 3, 2);
-    EXPECT_EQ(storage::Cache::makeKey(task), "add:2:3");
+    EXPECT_EQ(storage::Cache::makeKey(task), "2+3");
 }
 
 TEST(CacheMakeKeyTest, NonCommutativeSubtractPreservesOrder) {
     const calculator::Task t1 = makeTask("subtract", 5, 3);
     const calculator::Task t2 = makeTask("subtract", 3, 5);
     EXPECT_NE(storage::Cache::makeKey(t1), storage::Cache::makeKey(t2));
-    EXPECT_EQ(storage::Cache::makeKey(t1), "subtract:5:3");
+    EXPECT_EQ(storage::Cache::makeKey(t1), "5-3");
 }
 
 TEST(CacheMakeKeyTest, NonCommutativeDividePreservesOrder) {
@@ -55,7 +55,7 @@ TEST(CacheMakeKeyTest, NonCommutativePowerPreservesOrder) {
 
 TEST(CacheMakeKeyTest, UnaryFactorialOmitsSecondOperand) {
     const calculator::Task task = makeTask("factorial", 5, 0);
-    EXPECT_EQ(storage::Cache::makeKey(task), "factorial:5");
+    EXPECT_EQ(storage::Cache::makeKey(task), "5!");
 }
 
 TEST(CacheMakeKeyTest, UnaryFactorialIgnoresSecondOperand) {
@@ -127,14 +127,15 @@ TEST(CacheTest, FindAfterClearReturnsNullopt) {
     EXPECT_FALSE(cache.find(task).has_value());
 }
 
-TEST(CacheTest, FailedTaskCanBeCached) {
+TEST(CacheTest, ErrorTaskCanBeCached) {
     storage::Cache cache;
-    const calculator::Task task = makeTask("divide", 1, 0, 0, calculator::OperationStatus::Failed);
+    const calculator::Task task =
+        makeTask("divide", 1, 0, 0, calculator::OperationStatus::DivisionByZero);
     cache.insert(task);
 
     const auto result = cache.find(task);
     ASSERT_TRUE(result.has_value());
-    EXPECT_EQ(result->status, calculator::OperationStatus::Failed);
+    EXPECT_EQ(result->status, calculator::OperationStatus::DivisionByZero);
 }
 
 } // namespace

@@ -94,29 +94,10 @@ add_executable(calculator
 )
 
 set(FORMAT_STAMP "${CMAKE_CURRENT_BINARY_DIR}/clang_format.stamp")
-set(FORMAT_SOURCES
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/task.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/application.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/application.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/parser.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/parser.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/calculator.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/calculator.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/logger/logger.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/logger/logger.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/config/config.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/config/config.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/db/pg_connection.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/db/pg_connection.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/db/pg_result.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/db/pg_result.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/db/repository.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/db/repository.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/cache/cache.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/cache/cache.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/storage.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/storage/storage.cpp"
+file(GLOB_RECURSE FORMAT_SOURCES
+    CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
 )
 
 add_custom_command(

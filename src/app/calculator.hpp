@@ -6,6 +6,10 @@
 
 #include "task.hpp"
 
+namespace math {
+enum class StatusCode;
+} // namespace math
+
 namespace calculator {
 
 class Calculator {
@@ -24,8 +28,8 @@ public:
 private:
     void initialize();
 
-    using BinaryOp = std::function<int(int, int)>;
-    using UnaryOp = std::function<int(int)>;
+    using BinaryOp = std::function<math::StatusCode(int, int, int&)>;
+    using UnaryOp = std::function<math::StatusCode(int, int&)>;
 
     std::unordered_map<std::string, BinaryOp> binary_ops_;
     std::unordered_map<std::string, UnaryOp> unary_ops_;

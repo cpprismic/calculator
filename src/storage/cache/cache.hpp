@@ -26,6 +26,7 @@ private:
 
     static const std::unordered_set<std::string> commutative_ops_;
     static const std::unordered_set<std::string> unary_ops_;
+    static const std::unordered_map<std::string, char> op_symbols_;
 };
 
 } // namespace storage

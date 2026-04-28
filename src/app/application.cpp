@@ -7,6 +7,21 @@
 #include "../logger/logger.hpp"
 #include "parser.hpp"
 
+namespace {
+
+std::string errorMessage(const calculator::Task& task) {
+    switch (task.status) {
+    case calculator::OperationStatus::DivisionByZero:
+        return "Division by zero: " + task.operation;
+    case calculator::OperationStatus::Overflow:
+        return "Overflow: " + task.operation;
+    default:
+        return "Calculation failed: " + task.operation;
+    }
+}
+
+} // namespace
+
 namespace app {
 
 Application::Application() = default;
@@ -28,19 +43,16 @@ void Application::run(int argc, char** argv) {
     if (auto cached = storage_.find(task)) {
         log.info("Cache hit for operation: " + task.operation);
         task = *cached;
-        if (task.status == calculator::OperationStatus::Failed) {
-            throw std::runtime_error("Cached failure for operation: " + task.operation);
+        if (task.status != calculator::OperationStatus::Success) {
+            throw std::runtime_error(errorMessage(task));
         }
     } else {
         log.debug("Cache miss, computing...");
-        try {
-            calculator_.calculate(task);
-        } catch (const std::runtime_error&) {
-            task.status = calculator::OperationStatus::Failed;
-            storage_.save(task);
-            throw;
-        }
+        calculator_.calculate(task);
         storage_.save(task);
+        if (task.status != calculator::OperationStatus::Success) {
+            throw std::runtime_error(errorMessage(task));
+        }
     }
 
     log.info("Result: " + std::to_string(task.result));
