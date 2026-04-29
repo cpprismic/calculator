@@ -3,8 +3,8 @@ build/
 */build/
 build_release/
 */build_release/
-build_pref/
-*/build_pref/
+build_perf/
+*/build_perf/
 cmake-build-*/
 out/
 
