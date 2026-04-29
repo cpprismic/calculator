@@ -43,7 +43,7 @@ Repository::Repository(std::string_view conninfo) : conn_ {conninfo} {
 
 void Repository::ensureSchema() {
     exec("SET client_min_messages = WARNING");
-    PgResult result = exec("CREATE TABLE IF NOT EXISTS calculations ("
+    const PgResult result = exec("CREATE TABLE IF NOT EXISTS calculations ("
                            "    id         SERIAL PRIMARY KEY,"
                            "    operation  VARCHAR(32) NOT NULL,"
                            "    first_num  INTEGER     NOT NULL,"
@@ -70,7 +70,7 @@ void Repository::save(const calculator::Task& task) {
                                              result_str.c_str(),
                                              status_str.c_str()};
 
-    PgResult res =
+    const PgResult res =
         execParams("INSERT INTO calculations (operation, first_num, second_num, result, status) "
                    "VALUES ($1, $2, $3, $4, $5)",
                    params);
@@ -82,7 +82,7 @@ void Repository::save(const calculator::Task& task) {
 }
 
 std::vector<calculator::Task> Repository::loadAll() {
-    PgResult result =
+    const PgResult result =
         exec("SELECT operation, first_num, second_num, result, status FROM calculations");
 
     if (result.status() != PGRES_TUPLES_OK) {
