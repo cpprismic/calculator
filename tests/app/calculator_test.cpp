@@ -1,14 +1,12 @@
 #include <gtest/gtest.h>
 
-#include <stdexcept>
-
 #include "../../src/app/calculator.hpp"
 #include "../../src/app/task.hpp"
 
 namespace app::test {
 
-Task makeTask(const std::string& op, int first, int second = 0) {
-    Task task;
+calculator::Task makeTask(const std::string& op, int first, int second = 0) {
+    calculator::Task task;
     task.operation = op;
     task.first_number = first;
     task.second_number = second;
@@ -18,144 +16,164 @@ Task makeTask(const std::string& op, int first, int second = 0) {
 // Сложение
 
 TEST(CalculatorTest, Add) {
-    const Calculator calculator;
-    Task task = makeTask("add", 10, 5);
+    const calculator::Calculator calculator;
+    calculator::Task task = makeTask("add", 10, 5);
     calculator.calculate(task);
     EXPECT_EQ(task.result, 15);
+    EXPECT_EQ(task.status, calculator::OperationStatus::Success);
 }
 
 TEST(CalculatorTest, AddNegative) {
-    const Calculator calculator;
-    Task task = makeTask("add", -10, -5);
+    const calculator::Calculator calculator;
+    calculator::Task task = makeTask("add", -10, -5);
     calculator.calculate(task);
     EXPECT_EQ(task.result, -15);
+    EXPECT_EQ(task.status, calculator::OperationStatus::Success);
 }
 
-TEST(CalculatorTest, AddOverflowThrows) {
-    const Calculator calculator;
-    Task task = makeTask("add", 2147483647, 1);
-    EXPECT_THROW(calculator.calculate(task), std::runtime_error);
+TEST(CalculatorTest, AddOverflowSetsOverflowStatus) {
+    const calculator::Calculator calculator;
+    calculator::Task task = makeTask("add", 2147483647, 1);
+    calculator.calculate(task);
+    EXPECT_EQ(task.status, calculator::OperationStatus::Overflow);
 }
 
 // Вычитание
 
 TEST(CalculatorTest, Subtract) {
-    const Calculator calculator;
-    Task task = makeTask("subtract", 10, 5);
+    const calculator::Calculator calculator;
+    calculator::Task task = makeTask("subtract", 10, 5);
     calculator.calculate(task);
     EXPECT_EQ(task.result, 5);
+    EXPECT_EQ(task.status, calculator::OperationStatus::Success);
 }
 
-TEST(CalculatorTest, SubtractOverflowThrows) {
-    const Calculator calculator;
-    Task task = makeTask("subtract", -2147483648, 1);
-    EXPECT_THROW(calculator.calculate(task), std::runtime_error);
+TEST(CalculatorTest, SubtractOverflowSetsOverflowStatus) {
+    const calculator::Calculator calculator;
+    calculator::Task task = makeTask("subtract", -2147483648, 1);
+    calculator.calculate(task);
+    EXPECT_EQ(task.status, calculator::OperationStatus::Overflow);
 }
 
 // Умножение
 
 TEST(CalculatorTest, Multiply) {
-    const Calculator calculator;
-    Task task = makeTask("multiply", 6, 7);
+    const calculator::Calculator calculator;
+    calculator::Task task = makeTask("multiply", 6, 7);
     calculator.calculate(task);
     EXPECT_EQ(task.result, 42);
+    EXPECT_EQ(task.status, calculator::OperationStatus::Success);
 }
 
 TEST(CalculatorTest, MultiplyByZero) {
-    const Calculator calculator;
-    Task task = makeTask("multiply", 999, 0);
+    const calculator::Calculator calculator;
+    calculator::Task task = makeTask("multiply", 999, 0);
     calculator.calculate(task);
     EXPECT_EQ(task.result, 0);
+    EXPECT_EQ(task.status, calculator::OperationStatus::Success);
 }
 
-TEST(CalculatorTest, MultiplyOverflowThrows) {
-    const Calculator calculator;
-    Task task = makeTask("multiply", 2147483647, 2);
-    EXPECT_THROW(calculator.calculate(task), std::runtime_error);
+TEST(CalculatorTest, MultiplyOverflowSetsOverflowStatus) {
+    const calculator::Calculator calculator;
+    calculator::Task task = makeTask("multiply", 2147483647, 2);
+    calculator.calculate(task);
+    EXPECT_EQ(task.status, calculator::OperationStatus::Overflow);
 }
 
 // Деление
 
 TEST(CalculatorTest, Divide) {
-    const Calculator calculator;
-    Task task = makeTask("divide", 20, 4);
+    const calculator::Calculator calculator;
+    calculator::Task task = makeTask("divide", 20, 4);
     calculator.calculate(task);
     EXPECT_EQ(task.result, 5);
+    EXPECT_EQ(task.status, calculator::OperationStatus::Success);
 }
 
 TEST(CalculatorTest, DivideRoundsTowardZero) {
-    const Calculator calculator;
-    Task task = makeTask("divide", 7, 2);
+    const calculator::Calculator calculator;
+    calculator::Task task = makeTask("divide", 7, 2);
     calculator.calculate(task);
     EXPECT_EQ(task.result, 3);
+    EXPECT_EQ(task.status, calculator::OperationStatus::Success);
 }
 
-TEST(CalculatorTest, DivideByZeroThrows) {
-    const Calculator calculator;
-    Task task = makeTask("divide", 10, 0);
-    EXPECT_THROW(calculator.calculate(task), std::runtime_error);
+TEST(CalculatorTest, DivideByZeroSetsDivisionByZeroStatus) {
+    const calculator::Calculator calculator;
+    calculator::Task task = makeTask("divide", 10, 0);
+    calculator.calculate(task);
+    EXPECT_EQ(task.status, calculator::OperationStatus::DivisionByZero);
 }
 
-TEST(CalculatorTest, DivideOverflowThrows) {
-    const Calculator calculator;
-    Task task = makeTask("divide", -2147483648, -1);
-    EXPECT_THROW(calculator.calculate(task), std::runtime_error);
+TEST(CalculatorTest, DivideOverflowSetsOverflowStatus) {
+    const calculator::Calculator calculator;
+    calculator::Task task = makeTask("divide", -2147483648, -1);
+    calculator.calculate(task);
+    EXPECT_EQ(task.status, calculator::OperationStatus::Overflow);
 }
 
 // Возведение в степень
 
 TEST(CalculatorTest, Power) {
-    const Calculator calculator;
-    Task task = makeTask("power", 2, 10);
+    const calculator::Calculator calculator;
+    calculator::Task task = makeTask("power", 2, 10);
     calculator.calculate(task);
     EXPECT_EQ(task.result, 1024);
+    EXPECT_EQ(task.status, calculator::OperationStatus::Success);
 }
 
 TEST(CalculatorTest, PowerZeroExponent) {
-    const Calculator calculator;
-    Task task = makeTask("power", 999, 0);
+    const calculator::Calculator calculator;
+    calculator::Task task = makeTask("power", 999, 0);
     calculator.calculate(task);
     EXPECT_EQ(task.result, 1);
+    EXPECT_EQ(task.status, calculator::OperationStatus::Success);
 }
 
-TEST(CalculatorTest, PowerNegativeExponentThrows) {
-    const Calculator calculator;
-    Task task = makeTask("power", 2, -3);
-    EXPECT_THROW(calculator.calculate(task), std::runtime_error);
+TEST(CalculatorTest, PowerNegativeExponentSetsFailedStatus) {
+    const calculator::Calculator calculator;
+    calculator::Task task = makeTask("power", 2, -3);
+    calculator.calculate(task);
+    EXPECT_EQ(task.status, calculator::OperationStatus::Failed);
 }
 
-TEST(CalculatorTest, PowerOverflowThrows) {
-    const Calculator calculator;
-    Task task = makeTask("power", 2147483647, 2);
-    EXPECT_THROW(calculator.calculate(task), std::runtime_error);
+TEST(CalculatorTest, PowerOverflowSetsOverflowStatus) {
+    const calculator::Calculator calculator;
+    calculator::Task task = makeTask("power", 2147483647, 2);
+    calculator.calculate(task);
+    EXPECT_EQ(task.status, calculator::OperationStatus::Overflow);
 }
 
 // Факториал
 
 TEST(CalculatorTest, Factorial) {
-    const Calculator calculator;
-    Task task = makeTask("factorial", 5);
+    const calculator::Calculator calculator;
+    calculator::Task task = makeTask("factorial", 5);
     calculator.calculate(task);
     EXPECT_EQ(task.result, 120);
+    EXPECT_EQ(task.status, calculator::OperationStatus::Success);
 }
 
 TEST(CalculatorTest, FactorialZero) {
-    const Calculator calculator;
-    Task task = makeTask("factorial", 0);
+    const calculator::Calculator calculator;
+    calculator::Task task = makeTask("factorial", 0);
     calculator.calculate(task);
     EXPECT_EQ(task.result, 1);
+    EXPECT_EQ(task.status, calculator::OperationStatus::Success);
 }
 
-TEST(CalculatorTest, FactorialNegativeThrows) {
-    const Calculator calculator;
-    Task task = makeTask("factorial", -1);
-    EXPECT_THROW(calculator.calculate(task), std::runtime_error);
+TEST(CalculatorTest, FactorialNegativeSetsFailedStatus) {
+    const calculator::Calculator calculator;
+    calculator::Task task = makeTask("factorial", -1);
+    calculator.calculate(task);
+    EXPECT_EQ(task.status, calculator::OperationStatus::Failed);
 }
 
-TEST(CalculatorTest, FactorialOverflowThrows) {
-    const Calculator calculator;
-    Task task = makeTask("factorial", 20);
-    EXPECT_THROW(calculator.calculate(task), std::runtime_error);
+TEST(CalculatorTest, FactorialOverflowSetsOverflowStatus) {
+    const calculator::Calculator calculator;
+    calculator::Task task = makeTask("factorial", 20);
+    calculator.calculate(task);
+    EXPECT_EQ(task.status, calculator::OperationStatus::Overflow);
 }
 
 } // namespace app::test

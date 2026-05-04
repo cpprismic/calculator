@@ -3,8 +3,14 @@ build/
 */build/
 build_release/
 */build_release/
+build_perf/
+*/build_perf/
 cmake-build-*/
 out/
+
+# Логи
+logs/
+*/logs/
 
 # Скомпилированные файлы
 *.o
@@ -52,6 +58,9 @@ docker-compose.override.yml
 .env
 .env.local
 .env.*.local
+
+# DB credentials config
+config.json
 
 # Временные файлы
 *.tmp

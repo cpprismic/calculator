@@ -77,26 +77,27 @@ FetchContent_MakeAvailable(googletest)
 set_target_properties(gtest PROPERTIES CXX_CLANG_TIDY "")
 set_target_properties(gtest_main PROPERTIES CXX_CLANG_TIDY "")
 
+find_package(PostgreSQL REQUIRED)
+
 add_executable(calculator
     src/main.cpp
     src/app/application.cpp
     src/app/parser.cpp
     src/app/calculator.cpp
     src/logger/logger.cpp
+    src/config/config.cpp
+    src/storage/db/pg_connection.cpp
+    src/storage/db/pg_result.cpp
+    src/storage/db/repository.cpp
+    src/storage/cache/cache.cpp
+    src/storage/storage.cpp
 )
 
 set(FORMAT_STAMP "${CMAKE_CURRENT_BINARY_DIR}/clang_format.stamp")
-set(FORMAT_SOURCES
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/task.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/application.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/application.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/parser.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/parser.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/calculator.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/calculator.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/logger/logger.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/logger/logger.cpp"
+file(GLOB_RECURSE FORMAT_SOURCES
+    CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
 )
 
 add_custom_command(
@@ -118,10 +119,11 @@ target_include_directories(calculator PRIVATE
     src/
 )
 
-target_link_libraries(calculator PRIVATE 
+target_link_libraries(calculator PRIVATE
     MathLib::MathLib
     nlohmann_json::nlohmann_json
     spdlog::spdlog
+    PostgreSQL::PostgreSQL
 )
 
 install(TARGETS calculator
@@ -130,3 +132,4 @@ install(TARGETS calculator
 
 enable_testing()
 add_subdirectory(tests)
+add_subdirectory(bench)

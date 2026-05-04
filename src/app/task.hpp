@@ -2,13 +2,9 @@
 
 #include <string>
 
-namespace app {
+namespace calculator {
 
-enum class OperationStatus { 
-    NotExecuted, 
-    Success, 
-    Failed 
-};
+enum class OperationStatus { NotExecuted, Success, Failed, DivisionByZero, Overflow };
 
 struct Task {
     int first_number {0};
@@ -18,4 +14,4 @@ struct Task {
     OperationStatus status {OperationStatus::NotExecuted};
 };
 
-} // namespace app
+} // namespace calculator

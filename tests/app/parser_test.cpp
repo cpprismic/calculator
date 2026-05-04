@@ -9,7 +9,7 @@ namespace app::test {
 // Успешный парсинг
 
 TEST(ParserTest, ParsesBinaryOperation) {
-    const Task task = Parser::parse(R"({"operation": "add", "operands": [10, 5]})");
+    const calculator::Task task = Parser::parse(R"({"operation": "add", "operands": [10, 5]})");
 
     EXPECT_EQ(task.operation, "add");
     EXPECT_EQ(task.first_number, 10);
@@ -17,14 +17,14 @@ TEST(ParserTest, ParsesBinaryOperation) {
 }
 
 TEST(ParserTest, ParsesUnaryOperation) {
-    const Task task = Parser::parse(R"({"operation": "factorial", "operands": [5]})");
+    const calculator::Task task = Parser::parse(R"({"operation": "factorial", "operands": [5]})");
 
     EXPECT_EQ(task.operation, "factorial");
     EXPECT_EQ(task.first_number, 5);
 }
 
 TEST(ParserTest, ParsesNegativeOperands) {
-    const Task task = Parser::parse(R"({"operation": "add", "operands": [-10, -5]})");
+    const calculator::Task task = Parser::parse(R"({"operation": "add", "operands": [-10, -5]})");
 
     EXPECT_EQ(task.first_number, -10);
     EXPECT_EQ(task.second_number, -5);

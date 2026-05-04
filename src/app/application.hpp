@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../storage/storage.hpp"
 #include "calculator.hpp"
 
 namespace app {
@@ -9,16 +10,17 @@ public:
     Application();
     ~Application();
 
-    Application(const Application& other);
-    Application& operator=(const Application& other);
+    Application(const Application&) = delete;
+    Application& operator=(const Application&) = delete;
 
-    Application(Application&& other) noexcept;
-    Application& operator=(Application&& other) noexcept;
+    Application(Application&&) noexcept = default;
+    Application& operator=(Application&&) noexcept = default;
 
     void run(int argc, char** argv);
 
 private:
-    Calculator calculator_;
+    calculator::Calculator calculator_;
+    storage::Storage storage_;
 };
 
 } // namespace app

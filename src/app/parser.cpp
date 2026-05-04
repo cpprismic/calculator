@@ -12,7 +12,7 @@ const std::unordered_set<std::string> Parser::unary_ = {"factorial"};
 const std::unordered_set<std::string> Parser::binary_ = {
     "add", "subtract", "multiply", "divide", "power"};
 
-Task Parser::parse(const std::string& json_str) {
+calculator::Task Parser::parse(const std::string& json_str) {
     auto& log = logger::Logger::getInstance();
     log.debug("Parsing JSON: " + json_str);
 
@@ -30,7 +30,7 @@ Task Parser::parse(const std::string& json_str) {
         throw std::invalid_argument("Missing or invalid field: 'operands'");
     }
 
-    Task task;
+    calculator::Task task;
     task.operation = json["operation"].get<std::string>();
 
     const auto& operands = json["operands"];
