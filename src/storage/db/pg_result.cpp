@@ -5,49 +5,26 @@
 
 namespace storage::db {
 
-PgResult::PgResult(PGresult* result) noexcept // NOLINT(cppcoreguidelines-owning-memory)
-    : result_(result) {}
-
-PgResult::~PgResult() {
-    if (result_ != nullptr) {
-        PQclear(result_); // NOLINT(cppcoreguidelines-owning-memory)
-        result_ = nullptr;
-    }
-}
-
-PgResult::PgResult(PgResult&& other) noexcept : result_(other.result_) {
-    other.result_ = nullptr;
-}
-
-PgResult& PgResult::operator=(PgResult&& other) noexcept {
-    if (this != &other) {
-        if (result_ != nullptr) {
-            PQclear(result_); // NOLINT(cppcoreguidelines-owning-memory)
-        }
-        result_ = other.result_;
-        other.result_ = nullptr;
-    }
-    return *this;
-}
+PgResult::PgResult(PGresult* result) noexcept : result_ {result} {}
 
 PGresult* PgResult::get() const noexcept {
-    return result_;
+    return result_.get();
 }
 
 ExecStatusType PgResult::status() const noexcept {
-    return PQresultStatus(result_);
+    return PQresultStatus(result_.get());
 }
 
 int PgResult::numRows() const noexcept {
-    return PQntuples(result_);
+    return PQntuples(result_.get());
 }
 
 std::string PgResult::getValue(int row, int col) const {
-    if (row < 0 || row >= numRows() || col < 0 || col >= PQnfields(result_)) {
+    if (row < 0 || row >= numRows() || col < 0 || col >= PQnfields(result_.get())) {
         throw std::out_of_range("PgResult::getValue: invalid row/col (" + std::to_string(row) +
                                 ", " + std::to_string(col) + ")");
     }
-    return std::string {PQgetvalue(result_, row, col)};
+    return std::string {PQgetvalue(result_.get(), row, col)};
 }
 
 } // namespace storage::db

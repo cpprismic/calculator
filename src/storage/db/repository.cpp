@@ -44,13 +44,13 @@ Repository::Repository(std::string_view conninfo) : conn_ {conninfo} {
 void Repository::ensureSchema() {
     exec("SET client_min_messages = WARNING");
     const PgResult result = exec("CREATE TABLE IF NOT EXISTS calculations ("
-                           "    id         SERIAL PRIMARY KEY,"
-                           "    operation  VARCHAR(32) NOT NULL,"
-                           "    first_num  INTEGER     NOT NULL,"
-                           "    second_num INTEGER     NOT NULL,"
-                           "    result     INTEGER     NOT NULL,"
-                           "    status     INTEGER     NOT NULL"
-                           ")");
+                                 "    id         SERIAL PRIMARY KEY,"
+                                 "    operation  VARCHAR(32) NOT NULL,"
+                                 "    first_num  INTEGER     NOT NULL,"
+                                 "    second_num INTEGER     NOT NULL,"
+                                 "    result     INTEGER     NOT NULL,"
+                                 "    status     INTEGER     NOT NULL"
+                                 ")");
     if (result.status() != PGRES_COMMAND_OK) {
         throw std::runtime_error(std::string {"Failed to create schema: "} +
                                  PQerrorMessage(conn_.get()));

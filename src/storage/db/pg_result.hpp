@@ -1,23 +1,28 @@
 #pragma once
 
 #include <libpq-fe.h>
+#include <memory>
 #include <string>
 
 namespace storage::db {
 
+struct PqResultDeleter {
+    void operator()(PGresult* result) const noexcept { PQclear(result); }
+};
+
 class PgResult {
 public:
-    explicit PgResult(PGresult* result) noexcept; // NOLINT(cppcoreguidelines-owning-memory)
+    explicit PgResult(PGresult* result) noexcept;
 
-    ~PgResult();
+    ~PgResult() = default;
 
     PgResult(const PgResult&) = delete;
     PgResult& operator=(const PgResult&) = delete;
 
-    PgResult(PgResult&& other) noexcept;
-    PgResult& operator=(PgResult&& other) noexcept;
+    PgResult(PgResult&&) noexcept = default;
+    PgResult& operator=(PgResult&&) noexcept = default;
 
-    PGresult* get() const noexcept; // NOLINT(cppcoreguidelines-owning-memory)
+    PGresult* get() const noexcept;
 
     ExecStatusType status() const noexcept;
     int numRows() const noexcept;
@@ -25,7 +30,7 @@ public:
     std::string getValue(int row, int col) const;
 
 private:
-    PGresult* result_ {nullptr}; // NOLINT(cppcoreguidelines-owning-memory)
+    std::unique_ptr<PGresult, PqResultDeleter> result_;
 };
 
 } // namespace storage::db
